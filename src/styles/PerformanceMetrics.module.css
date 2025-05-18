@@ -1,0 +1,66 @@
+.metricsContainer {
+  margin-top: 2rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 1rem;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.metricsTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #333;
+}
+
+.metricsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.metricItem {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background-color: white;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.metricName {
+  font-weight: 600;
+  width: 60px;
+}
+
+.metricValue {
+  font-family: monospace;
+  color: #4285F4;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  min-width: 100px;
+}
+
+.metricDescription {
+  color: #777;
+  font-size: 0.75rem;
+  margin-left: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .metricItem {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .metricValue {
+    margin: 0.25rem 0;
+  }
+  
+  .metricDescription {
+    margin-left: 0;
+  }
+}

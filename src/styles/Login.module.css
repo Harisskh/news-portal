@@ -1,0 +1,108 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #dbeafe;
+  padding: 1rem;
+}
+
+.loginCard {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  width: 100%;
+  max-width: 450px;
+  text-align: center;
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.providerContainer {
+  margin-bottom: 1.5rem;
+}
+
+.chooseText {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.providersGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+
+.providerButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  border-radius: 5px;
+  border: 1px solid #e0e0e0;
+  background-color: white;
+  color: #333;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.providerButton:hover {
+  background-color: #89ade7;
+  border-color: #89ade7;
+}
+
+.google {
+  border-color: #4285F4;
+  color: #4285F4;
+}
+
+.google:hover {
+  background-color: rgba(66, 133, 244, 0.05);
+}
+
+.providerIcon {
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+}
+
+.termsText {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.termsText a {
+  color: #4285F4;
+  text-decoration: none;
+}
+
+.termsText a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .providersGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .loginCard {
+    padding: 1.5rem;
+  }
+}
