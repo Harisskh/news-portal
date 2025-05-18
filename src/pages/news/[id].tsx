@@ -8,7 +8,7 @@
  import Link from 'next/link';
  import { format } from 'date-fns';
  import { useSession, signIn } from 'next-auth/react';
- import Navbar from '../../components/Navbar'; // Import Navbar
+ import Navbar from '../../components/Navbar';
  import { fetchNewsById } from '../../lib/api';
  import { NewsItem } from '../../types/news';
  import styles from '../../styles/NewsDetail.module.css';
@@ -145,14 +145,17 @@
  
              <div className={styles.content}>
                {news.description && (
-                 <p className={styles.description}>{news.description}</p>
+                 <div className={styles.description}>{news.description}</div>
                )}
                
                {news.content ? (
                  <div className={styles.fullContent}>
-                   {news.content.split('\n\n').map((paragraph, index) => (
-                     <p key={index}>{paragraph}</p>
-                   ))}
+                   {/* Tampilkan konten berita lengkap tanpa memotongnya */}
+                   <div className={styles.articleContent}>
+                     {news.content.split('\n\n').map((paragraph, index) => (
+                       <p key={index}>{paragraph}</p>
+                     ))}
+                   </div>
                  </div>
                ) : (
                  <div className={styles.readMore}>

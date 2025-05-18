@@ -1,6 +1,5 @@
 // pages/api/news.ts
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getSession } from 'next-auth/react';
 import { v4 as uuidv4 } from 'uuid';
 import { NewsItem } from '../../types/news';
 
@@ -21,6 +20,7 @@ export default async function handler(
     const sources = ['bbc-news', 'cnn', 'the-verge', 'techcrunch', 'business-insider'];
     const sourceString = sources.join(',');
     
+    // Tambahkan parameter untuk mendapatkan konten berita lengkap jika tersedia
     const response = await fetch(
       `https://newsapi.org/v2/top-headlines?sources=${sourceString}&apiKey=${NEWS_API_KEY}`
     );
@@ -35,20 +35,36 @@ export default async function handler(
       throw new Error(data.message || 'Failed to fetch news');
     }
     
-    // Transform data to our format
-    const news: NewsItem[] = data.articles.map((article: any) => ({
-      id: uuidv4(), // Generate unique ID
-      title: article.title || 'Untitled',
-      description: article.description || null,
-      content: article.content || null,
-      url: article.url || '#',
-      urlToImage: article.urlToImage || null,
-      publishedAt: article.publishedAt || null,
-      source: {
-        id: article.source?.id || 'unknown',
-        name: article.source?.name || 'Unknown Source'
+    // Transform data ke format yang kita butuhkan dengan konten lengkap
+    const news: NewsItem[] = data.articles.map((article: any) => {
+      // Proses konten berita untuk menghilangkan teks pemotongan jika ada
+      let content = article.content || null;
+      if (content) {
+        // Menghilangkan teks +X chars di akhir konten
+        content = content.replace(/\+\d+ chars$/, '');
       }
-    }));
+
+      // Proses deskripsi untuk menghilangkan teks pemotongan jika ada
+      let description = article.description || null;
+      if (description) {
+        // Menghilangkan teks +X chars di akhir deskripsi
+        description = description.replace(/\+\d+ chars$/, '');
+      }
+
+      return {
+        id: uuidv4(), // Generate unique ID
+        title: article.title || 'Untitled',
+        description: description,
+        content: content,
+        url: article.url || '#',
+        urlToImage: article.urlToImage || null,
+        publishedAt: article.publishedAt || null,
+        source: {
+          id: article.source?.id || 'unknown',
+          name: article.source?.name || 'Unknown Source'
+        }
+      };
+    });
     
     return res.status(200).json(news);
   } catch (error) {

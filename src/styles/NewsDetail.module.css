@@ -157,6 +157,13 @@
   color: #333;
 }
 
+.articleContent {
+  /* Styling for full article text */
+  white-space: pre-wrap; /* Preserve line breaks */
+  overflow-wrap: break-word; /* Ensure long words are broken */
+  word-wrap: break-word;
+}
+
 .fullContent p {
   margin-bottom: 1.5rem;
 }

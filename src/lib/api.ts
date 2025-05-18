@@ -1,6 +1,6 @@
 /**
  * API service untuk mengambil data berita
- * lib/api.ts
+ * lib/api.ts - Perbaikan untuk menampilkan konten lengkap
  */
  import { NewsItem } from '../types/news';
 
@@ -80,10 +80,10 @@
      },
      {
        id: '6', // ID Persisten!
-       title: 'Global Markets Respond to Central Bank Interest Rate Decision',
-       description: 'Financial markets worldwide showed mixed reactions as the Federal Reserve announced it would hold interest rates steady while signaling potential cuts later in the year.',
-       content: 'Global financial markets responded with cautious optimism today after the Federal Reserve announced it would maintain current interest rates while signaling potential cuts later this year. The decision comes amid growing evidence that inflation is cooling while employment remains robust.\n\n"We believe the current monetary policy stance is appropriate given the economic data," said Federal Reserve Chair in the post-meeting press conference. "However, we remain data-dependent and are prepared to adjust our approach if economic conditions warrant."\n\nStock markets in the United States initially rallied on the news before settling into more modest gains. European and Asian markets showed mixed reactions, with technology stocks generally outperforming other sectors. The dollar weakened slightly against major currencies, while Treasury yields declined.\n\nEconomists suggest that the Fed\'s more dovish tone indicates growing confidence that inflation is returning to target levels without significant damage to the labor market, potentially setting the stage for a "soft landing" scenario that avoids recession.',
-       url: 'https://example.com/markets-central-bank-decision',
+       title: 'Antonio Brown detained by police following altercation at boxing event',
+       description: 'Antonio Brown was briefly detained by police early Saturday following an altercation in which gunshots were fired outside a celebrity boxing event in Miami, according to the former NFL star and video posted to social media.',
+       content: 'Miami (AP) Antonio Brown was briefly detained by police early Saturday following an altercation in which gunshots were fired outside a celebrity boxing event in Miami, according to the former NFL star and video posted to social media.\n\nPolice said in a statement that they responded to reports of gunshots fired outside Dade Arena in downtown Miami around 4 a.m. Saturday. Officers found one man with non-life-threatening wounds, who was transported to a hospital. The statement said that "all other subjects fled the scene."\n\nIn videos shared on social media and on the streaming site Kick.com, Brown is seen being led away by police outside the arena, where the BKFC (Bare Knuckle Fighting Championship) KnuckleMania 4 event was held Friday night. Later, Brown is seen walking out of a police station, claiming he had been held there for four hours.\n\n"They tried to take me to jail for nothing," he said, claiming he "didn\'t do nothing wrong."\n\n"Can I get my lawyer? Can I get my phone?" he said in one of the videos while being detained.\n\nBrown has had multiple run-ins with police over the years, including after the Tampa Bay Buccaneers released him following a bizarre incident during a game in January 2022, when he stripped off his jersey, pads and undershirt and left the field in the middle of a game against the New York Jets.',
+       url: 'https://example.com/antonio-brown-detained',
        urlToImage: 'https://picsum.photos/id/6/800/450',
        publishedAt: new Date(Date.now() - 16 * 60 * 60 * 1000).toISOString(), // 16 hours ago
        source: {
@@ -113,8 +113,21 @@
      
      // Jika berhasil, simpan di global untuk digunakan nanti
      const news: NewsItem[] = await response.json();
-     globalNewsItems = news;
-     return news;
+     
+     // Pastikan konten berita lengkap (tanpa +X chars di akhir)
+     const processedNews = news.map(item => {
+       // Pastikan properti konten dan deskripsi tidak dipotong
+       return {
+         ...item,
+         // Pastikan konten berita tidak terpotong
+         content: item.content ? item.content.replace(/\+\d+ chars$/, '') : item.content,
+         // Pastikan deskripsi tidak terpotong
+         description: item.description ? item.description.replace(/\+\d+ chars$/, '') : item.description
+       };
+     });
+     
+     globalNewsItems = processedNews;
+     return processedNews;
    } catch (error) {
      console.error('Error fetching news:', error);
      
