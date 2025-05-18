@@ -144,10 +144,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
     // In a real app, you'd fetch from an actual API
     // Here's sample code to fetch from News API (you'll need an API key)
-    // const apiKey = process.env.NEWS_API_KEY;
-    // const bbcNews = await fetch(`https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=${apiKey}`);
-    // const cnnNews = await fetch(`https://newsapi.org/v2/top-headlines?sources=cnn&apiKey=${apiKey}`);
-    // const reutersNews = await fetch(`https://newsapi.org/v2/top-headlines?sources=reuters&apiKey=${apiKey}`);
+    const apiKey = process.env.NEWS_API_KEY;
+    const bbcNews = await fetch(`https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=${apiKey}`);
+    const cnnNews = await fetch(`https://newsapi.org/v2/top-headlines?sources=cnn&apiKey=${apiKey}`);
+    const reutersNews = await fetch(`https://newsapi.org/v2/top-headlines?sources=reuters&apiKey=${apiKey}`);
     
     // For demo purposes, we'll use sample data
     const articles: NewsArticle[] = [
