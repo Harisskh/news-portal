@@ -1,3 +1,105 @@
+# Haris News Portal
+
+Aplikasi portal berita yang dibangun dengan Next.js dan OAuth2 untuk tugas evaluasi.
+
+## Fitur
+
+- Autentikasi dengan Google OAuth2
+- Menampilkan berita dari berbagai sumber
+- Filtering berita berdasarkan sumber
+- Halaman detail berita
+- Responsif untuk berbagai ukuran layar
+
+## Teknologi yang Digunakan
+
+- **Next.js** - Framework React untuk server-side rendering
+- **TypeScript** - Bahasa pemrograman dengan typing
+- **NextAuth.js** - Autentikasi OAuth untuk Next.js
+- **CSS Modules** - Styling yang termodulasi
+- **News API** - API untuk mendapatkan berita dari berbagai sumber
+
+## Setup Proyek
+
+### 1. Clone repositori dan install dependencies
+
+```bash
+git clone 
+cd news-portal
+npm install
+```
+
+### 2. Konfigurasi environment variables
+
+Buat file `.env.local` di root proyek dengan konten berikut:
+
+```
+# Authentication
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-nextauth-secret
+
+# OAuth
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# News API
+NEWS_API_KEY=your-newsapi-key
+```
+
+### 3. Jalankan aplikasi untuk development
+
+```bash
+npm run dev
+```
+
+Aplikasi akan berjalan di [http://localhost:3000](http://localhost:3000).
+
+## Struktur Project
+
+```
+news-portal/
+├── components/         # Komponen React yang dapat digunakan kembali
+├── lib/                # Utilitas dan fungsi helper
+├── pages/              # Halaman Next.js dan API routes
+│   ├── api/            # Next.js API routes
+│   └── news/           # Halaman detail berita
+├── public/             # Aset statis
+├── styles/             # File CSS
+└── types/              # Tipe TypeScript
+```
+
+## Spesifikasi Tugas
+
+1. Next.js:
+   - Halaman login dengan OAuth2
+   - Halaman daftar berita utama
+   - Halaman detail berita
+
+2. OAuth2:
+   - Integrasi dengan Google
+
+3. Portal Berita:
+   - Sumber minimal dari 3 portal berita berbeda
+   - Menampilkan daftar berita utama dari setiap portal
+   - Menampilkan detail berita
+   - Data seragam (waktu, ukuran gambar, panjang judul)
+
+## Setup News API
+
+Untuk menggunakan News API:
+
+1. Daftar akun di [News API](https://newsapi.org/) dan dapatkan API key
+2. Tambahkan API key ke file `.env.local` sebagai `NEWS_API_KEY`
+
+## Deployment
+
+Aplikasi dapat di-deploy menggunakan Vercel:
+
+1. Push repositori ke GitHub
+2. Connect ke Vercel
+3. Set environment variables di Vercel dashboard
+
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
 
 ## Getting Started

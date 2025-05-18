@@ -1,86 +1,61 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import axios from 'axios';
+// pages/api/news.ts
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { getSession } from 'next-auth/react';
+import { v4 as uuidv4 } from 'uuid';
+import { NewsItem } from '../../types/news';
 
-// Define response type for NewsAPI
-interface NewsAPIResponse {
-  status: string;
-  totalResults: number;
-  articles: Array<{
-    source: {
-      id: string | null;
-      name: string;
-    };
-    author: string | null;
-    title: string;
-    description: string;
-    url: string;
-    urlToImage: string | null;
-    publishedAt: string;
-    content: string | null;
-  }>;
-}
+// API key harus diatur di environment variable
+const NEWS_API_KEY = process.env.NEWS_API_KEY || '6a60b9411be241a3bf18746df545fd41';
 
-// This is a proxy API route to securely fetch news data
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  // Only allow GET requests
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-  
-  // Get the source from query parameters
-  const { source } = req.query;
-  
-  // Validate the source
-  if (!source || Array.isArray(source)) {
-    return res.status(400).json({ error: 'Invalid source parameter' });
-  }
-  
-  // Map our source names to News API sources
-  const sourceMapping: Record<string, string> = {
-    'bbc': 'bbc-news',
-    'cnn': 'cnn',
-    'reuters': 'reuters',
-  };
-  
-  // Get the mapped source
-  const apiSource = sourceMapping[source];
-  
-  if (!apiSource) {
-    return res.status(400).json({ error: 'Unsupported news source' });
-  }
-  
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   try {
-    // Get API key from environment variables
-    const apiKey = process.env.NEWS_API_KEY;
+    // Periksa metode request
+    if (req.method !== 'GET') {
+      return res.status(405).json({ error: 'Method Not Allowed' });
+    }
+
+    // Ambil berita dari berbagai sumber
+    const sources = ['bbc-news', 'cnn', 'the-verge', 'techcrunch', 'business-insider'];
+    const sourceString = sources.join(',');
     
-    if (!apiKey) {
-      console.error('NEWS_API_KEY environment variable is not set');
-      return res.status(500).json({ error: 'API configuration error' });
+    const response = await fetch(
+      `https://newsapi.org/v2/top-headlines?sources=${sourceString}&apiKey=${NEWS_API_KEY}`
+    );
+    
+    if (!response.ok) {
+      throw new Error(`News API error: ${response.statusText}`);
     }
     
-    // Fetch news from News API
-    const response = await axios.get<NewsAPIResponse>('https://newsapi.org/v2/top-headlines', {
-      params: {
-        sources: apiSource,
-        apiKey: apiKey,
-      },
-    });
+    const data = await response.json();
     
-    // Transform the API response to our expected format
-    const articles = response.data.articles.map((article, index) => ({
-      id: `${source}-${index}`,
-      source: source,
-      title: article.title || 'No title available',
-      description: article.description || 'No description available',
-      publishedAt: article.publishedAt,
-      url: article.url,
-      urlToImage: article.urlToImage || 'https://via.placeholder.com/800x450?text=No+Image',
-      content: article.content,
+    if (data.status !== 'ok') {
+      throw new Error(data.message || 'Failed to fetch news');
+    }
+    
+    // Transform data to our format
+    const news: NewsItem[] = data.articles.map((article: any) => ({
+      id: uuidv4(), // Generate unique ID
+      title: article.title || 'Untitled',
+      description: article.description || null,
+      content: article.content || null,
+      url: article.url || '#',
+      urlToImage: article.urlToImage || null,
+      publishedAt: article.publishedAt || null,
+      source: {
+        id: article.source?.id || 'unknown',
+        name: article.source?.name || 'Unknown Source'
+      }
     }));
     
-    return res.status(200).json({ articles });
+    return res.status(200).json(news);
   } catch (error) {
-    console.error('Error fetching news data:', error);
-    return res.status(500).json({ error: 'Failed to fetch news data' });
+    console.error('Error fetching news:', error);
+    return res.status(500).json({ 
+      error: 'Failed to fetch news',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 }

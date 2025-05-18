@@ -1,108 +1,206 @@
 .container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #EBF3FE;
+  background-image: linear-gradient(135deg, #e8f0fe 0%, #d1e3fa 100%);
+}
+
+.main {
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  background-color: #dbeafe;
-  padding: 1rem;
+  padding: 2rem 1rem;
 }
 
 .loginCard {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
   width: 100%;
-  max-width: 450px;
+  max-width: 420px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem;
   text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
+/* Logo */
+.logoContainer {
+  margin-bottom: 1.5rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoIcon {
+  width: 40px;
+  height: 40px;
+  background-color: #0070f3;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.5rem;
+}
+
+.logoText {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+}
+
+/* Title and description */
 .title {
   font-size: 1.8rem;
   font-weight: 700;
-  color: #0070f3;
-  margin-bottom: 0.5rem;
+  margin: 0 0 0.5rem 0;
+  color: #333;
 }
 
-.subtitle {
+.description {
   font-size: 1rem;
   color: #666;
   margin-bottom: 2rem;
 }
 
-.providerContainer {
-  margin-bottom: 1.5rem;
-}
-
-.chooseText {
-  font-size: 0.9rem;
-  color: #666;
-  margin-bottom: 1rem;
-}
-
-.providersGrid {
+/* Auth buttons */
+.authButtons {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  align-items: center;
+  margin-bottom: 2rem;
 }
 
+.authButton {
+  width: 100%;
+  height: 48px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+}
 
-.providerButton {
+.authButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.authButtonContent {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem;
-  border-radius: 5px;
-  border: 1px solid #e0e0e0;
-  background-color: white;
-  color: #333;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  width: 100%;
+  height: 100%;
+  padding: 0 1rem;
 }
 
-.providerButton:hover {
-  background-color: #89ade7;
-  border-color: #89ade7;
-}
-
-.google {
-  border-color: #4285F4;
-  color: #4285F4;
-}
-
-.google:hover {
-  background-color: rgba(66, 133, 244, 0.05);
-}
-
-.providerIcon {
+.authButtonIcon {
+  position: absolute;
+  left: 1rem;
   display: flex;
   align-items: center;
-  margin-right: 8px;
+  justify-content: center;
+}
+
+.googleButton {
+  background-color: white;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.googleButton:hover:not(:disabled) {
+  background-color: #f8f8f8;
+}
+
+.facebookButton {
+  background-color: #1877F2;
+  color: white;
+}
+
+.facebookButton:hover:not(:disabled) {
+  background-color: #166fe5;
+}
+
+.buttonSpinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s linear infinite;
+  margin-left: 0.5rem;
+}
+
+.googleButton .buttonSpinner {
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-top-color: #333;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Terms section */
+.termsSection {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
 }
 
 .termsText {
   font-size: 0.8rem;
-  color: #888;
+  color: #777;
+  margin: 0;
 }
 
-.termsText a {
-  color: #4285F4;
+.termsLink {
+  color: #0070f3;
   text-decoration: none;
 }
 
-.termsText a:hover {
+.termsLink:hover {
   text-decoration: underline;
 }
 
-@media (max-width: 480px) {
-  .providersGrid {
-    grid-template-columns: 1fr;
-  }
-  
+/* Footer */
+.footer {
+  padding: 1.5rem;
+  text-align: center;
+  border-top: 1px solid #eaeaea;
+  background-color: white;
+}
+
+.footerContent {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
   .loginCard {
-    padding: 1.5rem;
+    padding: 2rem 1.5rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .description {
+    font-size: 0.9rem;
   }
 }
