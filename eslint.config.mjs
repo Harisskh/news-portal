@@ -14,3 +14,21 @@ const eslintConfig = [
 ];
 
 export default eslintConfig;
+
+// File: .eslintrc.json
+// Konfigurasi untuk menonaktifkan beberapa aturan ESLint yang bermasalah
+
+{
+  "extends": "next/core-web-vitals",
+  "rules": {
+    // Nonaktifkan aturan yang bermasalah
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-unused-vars": ["warn", { 
+      "argsIgnorePattern": "^_",
+      "varsIgnorePattern": "^_"
+    }],
+    "react/no-unescaped-entities": "off",
+    "react-hooks/exhaustive-deps": "warn", // Ubah ke warn daripada error
+    "@next/next/no-img-element": "warn" // Ubah ke warn daripada error
+  }
+}

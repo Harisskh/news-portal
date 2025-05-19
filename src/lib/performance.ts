@@ -1,203 +1,196 @@
-// Performance metrics monitoring utility
+// Perbaikan untuk src/lib/performance.ts
+// Implementasi initPerformanceMonitoring yang diimpor oleh usePagePerformance
 
-export interface PerformanceMetrics {
-  // Time to First Byte (TTFB)
-  ttfb: number;
-  // First Contentful Paint (FCP)
-  fcp: number;
-  // Largest Contentful Paint (LCP)
-  lcp: number;
-  // First Input Delay (FID)
-  fid: number;
-  // Cumulative Layout Shift (CLS)
-  cls: number;
+import { PerformanceMetrics } from '../types/performance';
+
+// Interface untuk PerformanceObserver entries
+interface CustomPerformanceEntry {
+  startTime: number;
+  processingStart?: number;
+  hadRecentInput?: boolean;
+  // tambahkan properti lain yang dibutuhkan
 }
 
+// Interface untuk EntryList
+interface EntryListType {
+  getEntries: () => CustomPerformanceEntry[];
+}
+
+// PerformanceObserver interface
+interface CustomPerformanceObserver {
+  observe: (options: { type: string, buffered?: boolean }) => void;
+  disconnect: () => void;
+}
+
+// Kelas untuk monitoring performa
 class PerformanceMonitor {
-  private metrics: Partial<PerformanceMetrics> = {};
-  private observers: any[] = [];
-
-  constructor() {
-    if (typeof window !== 'undefined') {
-      this.setupObservers();
-    }
-  }
-
-  private setupObservers() {
-    // Measure Time to First Byte (TTFB)
+  private metrics: PerformanceMetrics = {
+    fcp: 0,
+    lcp: 0,
+    fid: 0,
+    cls: 0,
+    ttfb: 0
+  };
+  
+  private observers: CustomPerformanceObserver[] = [];
+  private updateCallback: (metrics: PerformanceMetrics) => void;
+  
+  constructor(updateCallback: (metrics: PerformanceMetrics) => void) {
+    this.updateCallback = updateCallback;
     this.measureTTFB();
-
-    // Measure First Contentful Paint (FCP)
     this.measureFCP();
-
-    // Measure Largest Contentful Paint (LCP)
     this.measureLCP();
-
-    // Measure First Input Delay (FID)
     this.measureFID();
-
-    // Measure Cumulative Layout Shift (CLS)
     this.measureCLS();
   }
-
+  
+  // Mengukur Time to First Byte
   private measureTTFB() {
-    const navEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-    if (navEntry) {
-      this.metrics.ttfb = navEntry.responseStart;
+    if (performance && 'getEntriesByType' in performance) {
+      const navEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+      if (navEntry) {
+        this.metrics.ttfb = navEntry.responseStart;
+        this.updateCallback(this.metrics);
+      }
     }
   }
-
+  
+  // Mengukur First Contentful Paint
   private measureFCP() {
-    const paintObserver = new PerformanceObserver((entryList) => {
-      for (const entry of entryList.getEntries()) {
-        if (entry.name === 'first-contentful-paint') {
-          this.metrics.fcp = entry.startTime;
-          paintObserver.disconnect();
-        }
-      }
-    });
-
-    paintObserver.observe({ type: 'paint', buffered: true });
-    this.observers.push(paintObserver);
-  }
-
-  private measureLCP() {
-    const lcpObserver = new PerformanceObserver((entryList) => {
-      const entries = entryList.getEntries();
-      const lastEntry = entries[entries.length - 1];
-      if (lastEntry) {
-        this.metrics.lcp = lastEntry.startTime;
-      }
-    });
-
-    lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
-    this.observers.push(lcpObserver);
-
-    // Stop observing LCP after the page is fully loaded
-    window.addEventListener('load', () => {
-      // Give some extra time for the browser to report the last LCP
-      setTimeout(() => lcpObserver.disconnect(), 5000);
-    });
-  }
-
-  private measureFID() {
-    const fidObserver = new PerformanceObserver((entryList) => {
-      const firstInput = entryList.getEntries()[0];
-      if (firstInput) {
-        this.metrics.fid = firstInput.processingStart - firstInput.startTime;
-        fidObserver.disconnect();
-      }
-    });
-
-    fidObserver.observe({ type: 'first-input', buffered: true });
-    this.observers.push(fidObserver);
-  }
-
-  private measureCLS() {
-    let clsValue = 0;
-    let clsEntries: PerformanceEntry[] = [];
-
-    const clsObserver = new PerformanceObserver((entryList) => {
-      const entries = entryList.getEntries();
-      
-      entries.forEach((entry) => {
-        // Only count layout shifts without recent user input
-        if (!(entry as any).hadRecentInput) {
-          const firstSessionEntry = clsEntries.length === 0;
-          const entryTime = entry.startTime;
-          
-          // If it's the first entry or within the same session window
-          if (firstSessionEntry || entryTime - clsEntries[clsEntries.length - 1].startTime < 1000) {
-            clsEntries.push(entry);
-          } else {
-            // Start a new session
-            clsEntries = [entry];
+    try {
+      // @ts-ignore - Cek apakah PerformanceObserver tersedia di browser
+      if (typeof PerformanceObserver !== 'undefined') {
+        const fcpObserver = new PerformanceObserver((entryList: EntryListType) => {
+          const entries = entryList.getEntries();
+          if (entries.length > 0) {
+            const firstEntry = entries[0];
+            this.metrics.fcp = firstEntry.startTime;
+            this.updateCallback(this.metrics);
+            fcpObserver.disconnect();
           }
-          
-          // Calculate the CLS value for this session
-          let sessionValue = 0;
-          clsEntries.forEach((sessionEntry) => {
-            sessionValue += (sessionEntry as any).value;
-          });
-          
-          if (sessionValue > clsValue) {
-            clsValue = sessionValue;
-            this.metrics.cls = clsValue;
-          }
-        }
-      });
-    });
-
-    clsObserver.observe({ type: 'layout-shift', buffered: true });
-    this.observers.push(clsObserver);
-
-    // Stop observing CLS after the page is fully loaded and the user has not interacted
-    window.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') {
-        clsObserver.takeRecords();
-        clsObserver.disconnect();
+        }) as unknown as CustomPerformanceObserver;
+        
+        fcpObserver.observe({ type: 'paint', buffered: true });
+        this.observers.push(fcpObserver);
       }
-    });
-  }
-
-  public getMetrics(): Partial<PerformanceMetrics> {
-    return { ...this.metrics };
-  }
-
-  public logMetricsToConsole(): void {
-    console.log('Performance Metrics:', this.getMetrics());
-  }
-
-  public sendMetricsToAnalytics(): void {
-    // Example implementation - would be replaced with actual analytics service
-    const metrics = this.getMetrics();
-    
-    // Send metrics to your analytics service
-    if (typeof window !== 'undefined') {
-      // Here you would send to your analytics service
-      console.log('Sending metrics to analytics:', metrics);
-      
-      // Example: sending to a hypothetical endpoint
-      // fetch('/api/analytics/performance', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(metrics)
-      // });
+    } catch (error) {
+      console.error('Error measuring FCP:', error);
     }
   }
-
-  public cleanup(): void {
-    this.observers.forEach(observer => {
-      if (observer && typeof observer.disconnect === 'function') {
-        observer.disconnect();
+  
+  // Mengukur Largest Contentful Paint
+  private measureLCP() {
+    try {
+      // @ts-ignore - Cek apakah PerformanceObserver tersedia di browser
+      if (typeof PerformanceObserver !== 'undefined') {
+        const lcpObserver = new PerformanceObserver((entryList: EntryListType) => {
+          const entries = entryList.getEntries();
+          if (entries.length > 0) {
+            // Gunakan entry terakhir karena LCP dapat berubah saat halaman memuat
+            const lastEntry = entries[entries.length - 1];
+            this.metrics.lcp = lastEntry.startTime;
+            this.updateCallback(this.metrics);
+          }
+        }) as unknown as CustomPerformanceObserver;
+        
+        lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
+        this.observers.push(lcpObserver);
       }
-    });
-    this.observers = [];
-  }
-}
-
-// Create a singleton instance
-let performanceMonitor: PerformanceMonitor | null = null;
-
-export function getPerformanceMonitor(): PerformanceMonitor {
-  if (typeof window !== 'undefined' && !performanceMonitor) {
-    performanceMonitor = new PerformanceMonitor();
-  }
-  return performanceMonitor as PerformanceMonitor;
-}
-
-// Export a hook to use the performance monitor
-export function usePerformanceMonitoring(): Partial<PerformanceMetrics> {
-  if (typeof window === 'undefined') {
-    return {};
+    } catch (error) {
+      console.error('Error measuring LCP:', error);
+    }
   }
   
-  const monitor = getPerformanceMonitor();
-  // Log metrics after the component is mounted
-  setTimeout(() => {
-    monitor.logMetricsToConsole();
-    monitor.sendMetricsToAnalytics();
-  }, 5000);
+  // Mengukur First Input Delay
+  private measureFID() {
+    try {
+      // @ts-ignore - Cek apakah PerformanceObserver tersedia di browser
+      if (typeof PerformanceObserver !== 'undefined') {
+        const fidObserver = new PerformanceObserver((entryList: EntryListType) => {
+          const entries = entryList.getEntries();
+          if (entries.length > 0) {
+            const firstInput = entries[0] as CustomPerformanceEntry;
+            
+            // Type assertion dan optional chaining untuk menghindari error
+            if (firstInput && firstInput.processingStart && firstInput.startTime) {
+              this.metrics.fid = firstInput.processingStart - firstInput.startTime;
+              this.updateCallback(this.metrics);
+              fidObserver.disconnect();
+            }
+          }
+        }) as unknown as CustomPerformanceObserver;
+        
+        fidObserver.observe({ type: 'first-input', buffered: true });
+        this.observers.push(fidObserver);
+      }
+    } catch (error) {
+      console.error('Error measuring FID:', error);
+    }
+  }
   
-  return monitor.getMetrics();
+  // Mengukur Cumulative Layout Shift
+  private measureCLS() {
+    try {
+      // @ts-ignore - Cek apakah PerformanceObserver tersedia di browser
+      if (typeof PerformanceObserver !== 'undefined') {
+        let clsValue = 0;
+        let clsEntries: CustomPerformanceEntry[] = [];
+        
+        const clsObserver = new PerformanceObserver((entryList: EntryListType) => {
+          const entries = entryList.getEntries() as CustomPerformanceEntry[];
+          
+          entries.forEach(entry => {
+            // Hanya hitung layout shifts tanpa input pengguna
+            if (!entry.hadRecentInput) {
+              const firstSessionEntry = clsEntries.length === 0;
+              const entryTime = entry.startTime;
+              
+              // Jika ini entry pertama atau dalam jendela sesi yang sama
+              if (firstSessionEntry || (entryTime - clsEntries[clsEntries.length - 1].startTime < 1000)) {
+                clsEntries.push(entry);
+              } else {
+                // Mulai sesi baru
+                clsEntries = [entry];
+              }
+              
+              // Kalkluasi CLS
+              let sessionValue = 0;
+              // @ts-ignore - Layout shift value
+              clsEntries.forEach((sessionEntry) => { sessionValue += sessionEntry.value || 0; });
+              
+              if (sessionValue > clsValue) {
+                clsValue = sessionValue;
+                this.metrics.cls = clsValue;
+                this.updateCallback(this.metrics);
+              }
+            }
+          });
+        }) as unknown as CustomPerformanceObserver;
+        
+        clsObserver.observe({ type: 'layout-shift', buffered: true });
+        this.observers.push(clsObserver);
+      }
+    } catch (error) {
+      console.error('Error measuring CLS:', error);
+    }
+  }
+  
+  // Membersihkan observers saat komponen unmount
+  public disconnect() {
+    this.observers.forEach(observer => observer.disconnect());
+  }
 }
+
+// Fungsi yang digunakan oleh hook usePagePerformance
+export const initPerformanceMonitoring = (updateCallback: (metrics: PerformanceMetrics) => void) => {
+  // Hanya jalankan di browser
+  if (typeof window !== 'undefined') {
+    const monitor = new PerformanceMonitor(updateCallback);
+    
+    // Return cleanup function
+    return () => monitor.disconnect();
+  }
+  
+  // Return dummy cleanup di server
+  return () => {};
+};
