@@ -1,19 +1,19 @@
 // File: src/types/performance.ts
-// Interface untuk metrik performa web
+// Tipe untuk metrik performa
 
 export interface PerformanceMetrics {
-  // First Contentful Paint dalam milidetik
+  // Time to First Byte (waktu dari permintaan hingga byte pertama diterima)
+  ttfb: number;
+  
+  // First Contentful Paint (waktu hingga konten pertama ditampilkan)
   fcp: number;
   
-  // Largest Contentful Paint dalam milidetik
+  // Largest Contentful Paint (waktu hingga elemen konten terbesar ditampilkan)
   lcp: number;
   
-  // First Input Delay dalam milidetik
+  // First Input Delay (delay respons terhadap interaksi pengguna pertama)
   fid: number;
   
-  // Cumulative Layout Shift (tidak memiliki unit)
+  // Cumulative Layout Shift (pergeseran layout selama halaman dimuat)
   cls: number;
-  
-  // Time To First Byte dalam milidetik
-  ttfb: number;
 }

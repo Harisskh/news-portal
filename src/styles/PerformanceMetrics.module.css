@@ -1,66 +1,111 @@
-.metricsContainer {
-  margin-top: 2rem;
-  background-color: #f9f9f9;
-  border-radius: 8px;
+/* File: src/styles/PerformanceMetrics.module.css */
+/* Styling untuk komponen PerformanceMetrics */
+
+.container {
+  width: 100%;
+  margin: 2rem 0;
   padding: 1rem;
-  max-width: 100%;
-  overflow: hidden;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.metricsTitle {
-  font-size: 1rem;
+.title {
+  font-size: 1.2rem;
   font-weight: 600;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
   color: #333;
 }
 
-.metricsList {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
 }
 
-.metricItem {
-  display: flex;
-  align-items: center;
-  font-size: 0.875rem;
-  padding: 0.5rem;
-  border-radius: 4px;
+.metricCard {
   background-color: white;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+  padding: 1rem;
+  border-left: 4px solid #ccc;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.metricCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.metricCard.good {
+  border-left-color: #4caf50;
+}
+
+.metricCard.needs-improvement {
+  border-left-color: #ff9800;
+}
+
+.metricCard.poor {
+  border-left-color: #f44336;
+}
+
+.metricHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
 }
 
 .metricName {
-  font-weight: 600;
-  width: 60px;
+  font-weight: 500;
+  color: #333;
 }
 
 .metricValue {
-  font-family: monospace;
-  color: #4285F4;
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
-  min-width: 100px;
+  font-weight: 600;
+  color: #000;
 }
 
 .metricDescription {
-  color: #777;
-  font-size: 0.75rem;
-  margin-left: auto;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #eee;
+  font-size: 0.85rem;
+  color: #555;
 }
 
-/* Responsive adjustments */
-@media (max-width: 480px) {
-  .metricItem {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .metricValue {
-    margin: 0.25rem 0;
-  }
-  
-  .metricDescription {
-    margin-left: 0;
+.metricDescription p {
+  margin-bottom: 0.5rem;
+}
+
+.categoryIndicator {
+  display: flex;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
+.indicator.good {
+  background-color: #4caf50;
+}
+
+.indicator.needs-improvement {
+  background-color: #ff9800;
+}
+
+.indicator.poor {
+  background-color: #f44336;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+  .metricsGrid {
+    grid-template-columns: 1fr;
   }
 }

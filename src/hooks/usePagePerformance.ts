@@ -1,45 +1,49 @@
-// Perbaikan untuk src/hooks/usePagePerformance.ts
+// File: src/hooks/usePagePerformance.ts
+// React hook untuk menggunakan pemantauan kinerja
 
 import { useState, useEffect, useCallback } from 'react';
 import { PerformanceMetrics } from '../types/performance';
+import { initPerformanceMonitoring } from '../lib/performance';
 
-// Pastikan file lib/performance.ts mengekspor fungsi initPerformanceMonitoring
-// Jika tidak, buat fungsi tersebut dengan implementasi sederhana
-
+/**
+ * Hook untuk memantau dan mendapatkan metrik kinerja halaman
+ * @returns PerformanceMetrics - Object berisi metrik kinerja halaman
+ */
 export const usePagePerformance = (): PerformanceMetrics => {
+  // Inisialisasi state dengan nilai default
   const [performanceMetrics, setPerformanceMetrics] = useState<PerformanceMetrics>({
+    ttfb: 0,
     fcp: 0,
     lcp: 0,
     fid: 0,
-    cls: 0,
-    ttfb: 0
+    cls: 0
   });
 
-  // Gunakan useCallback untuk memastikan fungsi tidak dibuat ulang
-  // pada setiap render
+  // Callback untuk memperbarui metrik
+  // Gunakan useCallback agar fungsi tidak dibuat ulang setiap render
   const updateMetrics = useCallback((metrics: PerformanceMetrics) => {
-    setPerformanceMetrics(metrics);
+    setPerformanceMetrics(prevMetrics => ({
+      ...prevMetrics,
+      ...metrics
+    }));
   }, []);
 
+  // Inisialisasi pemantauan kinerja saat komponen dimount
   useEffect(() => {
-    // Jika initPerformanceMonitoring tidak tersedia, buat fungsi dummy sementara
-    // Ini akan mencegah error kompilasi sementara sampai fungsi yang benar dibuat
-    const dummyInitPerformanceMonitoring = (callback: (metrics: PerformanceMetrics) => void) => {
-      // Implementasi dummy - hanya untuk mencegah error
-      console.log('Performance monitoring is not fully implemented');
+    // Hanya jalankan di browser dan bukan di mode production
+    if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
+      console.log('Initializing performance monitoring...');
       
-      // Return cleanup function
-      return () => {
-        console.log('Cleaning up performance monitoring');
-      };
-    };
+      // Mulai pemantauan kinerja
+      const cleanup = initPerformanceMonitoring(updateMetrics);
+      
+      // Bersihkan observer saat komponen unmount
+      return cleanup;
+    }
     
-    // Gunakan fungsi dummy atau asli jika tersedia
-    const cleanup = dummyInitPerformanceMonitoring(updateMetrics);
-    
-    // Cleanup function untuk useEffect
-    return cleanup;
-  }, [updateMetrics]); // Tambahkan updateMetrics ke dependency array
+    // Fungsi pembersihan dummy untuk server-side rendering
+    return () => {};
+  }, [updateMetrics]);
 
   return performanceMetrics;
 };

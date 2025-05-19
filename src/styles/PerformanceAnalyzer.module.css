@@ -1,0 +1,150 @@
+/* File: src/styles/PerformanceAnalyzer.module.css */
+/* Styling untuk komponen PerformanceAnalyzer */
+
+.container {
+  width: 100%;
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.75rem;
+}
+
+.scoreSection {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.scoreCircle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1.5rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.scoreCircle.excellent {
+  background-color: #4caf50;
+}
+
+.scoreCircle.good {
+  background-color: #8bc34a;
+}
+
+.scoreCircle.average {
+  background-color: #ffc107;
+}
+
+.scoreCircle.poor {
+  background-color: #f44336;
+}
+
+.scoreDetails {
+  flex: 1;
+}
+
+.scoreDetails h4 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.scoreDescription {
+  color: #666;
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+}
+
+.recommendationsSection {
+  margin-top: 1rem;
+}
+
+.recommendationsSection h4 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.recommendationsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.recommendationItem {
+  padding: 1rem;
+  border-radius: 6px;
+  background-color: #f8f9fa;
+  margin-bottom: 1rem;
+  border-left: 4px solid #ccc;
+  position: relative;
+}
+
+.recommendationItem.high {
+  border-left-color: #f44336;
+  background-color: #fff8f8;
+}
+
+.recommendationItem.medium {
+  border-left-color: #ff9800;
+  background-color: #fffaf1;
+}
+
+.recommendationItem.low {
+  border-left-color: #4caf50;
+  background-color: #f1f8e9;
+}
+
+.recommendationItem h5 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.recommendationItem p {
+  margin: 0;
+  color: #555;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.priorityTag {
+  display: inline-block;
+  background-color: #f44336;
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  margin-top: 0.75rem;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+  .scoreSection {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .scoreCircle {
+    margin-right: 0;
+    margin-bottom: 1.5rem;
+  }
+}
